@@ -94,7 +94,7 @@ public class JstlController {
 		model.addAttribute("memberList", memberList);
 		*/
 		
-		 */
+		
 		//2) 각 type 파라미터에 따라 경우에 맞는 작업만 수행
 		/*
 		model.addAttribute("type", type);
