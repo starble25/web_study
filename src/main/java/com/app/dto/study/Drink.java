@@ -1,16 +1,8 @@
-package com.app.dto;
+package com.app.dto.study;
 
-public class DrinkItem {
+public class Drink {
 	String item;
 	String type;
-
-	public DrinkItem() {}
-	
-	public DrinkItem(String item, String type) {
-		super();
-		this.item = item;
-		this.type = type;
-	}
 	
 	public String getItem() {
 		return item;

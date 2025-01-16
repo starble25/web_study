@@ -1,4 +1,4 @@
-package com.app.controller;
+package com.app.controller.study;
 
 import java.util.Map;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.app.dto.Drink;
+import com.app.dto.study.Drink;
 
 @Controller
 @RequestMapping("/prac01")
