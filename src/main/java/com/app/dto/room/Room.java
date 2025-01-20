@@ -15,6 +15,7 @@ import lombok.ToString;
 //@AllArgsConstructor	// 모든 parameter 생성자
 
 @Data
+@ToString
 public class Room {
 
 	int roomId;	//Primary Key 기본키 식별자
