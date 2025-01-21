@@ -2,10 +2,13 @@ package com.app.controller.admin;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.app.dto.room.Room;
@@ -57,8 +60,41 @@ public class AdminController {
 		return "admin/rooms";
 	}
 	
-	//고객 관리/등록
+	//관리자 특정 객실에 대한 정보(상세페이지)
+	//	1.	(파라미터 여러개 전달할 때 주로 사용)
+	//	/admin/roomInfo?roomId=2
+	//@GetMapping("/admin/roomInfo")
 	
+	//	2.
+	//	/admin/room/2
+	@GetMapping("/admin/room/{roomId}")
+	public String room(@PathVariable String roomId, Model model) {
+		
+		int roomIdInt = Integer.parseInt(roomId);
+		
+		Room room = roomService.findRoomByRoomId(roomIdInt);
+		model.addAttribute("room", room);
+		
+		return "admin/room";
+	}
+	
+	//객실 정보 삭제
+	//	/admin/removeRoom?roomId=?
+	@GetMapping("/admin/removeRoom")
+	public String removeRoom(HttpServletRequest request) {
+		String roomId = request.getParameter("roomId");
+		int roomIdInt = Integer.parseInt(roomId);
+		
+		int result = roomService.removeRoom(roomIdInt);
+		
+		return "redirect:/admin/rooms";
+//		if(result > 0) {
+//		} else {
+//		}
+	}
+	
+	
+	//고객 관리/등록
 	@GetMapping("/admin/users/add")
 	public String addUser() {
 		return "admin/addUser";
@@ -75,7 +111,19 @@ public class AdminController {
 		//int result = userService.saveCustomerUser(user);
 		System.out.println(result);
 		
-		return "admin/addUser";
+		if(result > 0) {
+			return "redirect:/admin/users";
+		} else {
+			return "admin/addUser";
+		}
+	}
+	
+	@GetMapping("/admin/users")
+	public String users(Model model) {
+		List<User> userList = userService.findUserList();
+		model.addAttribute("userList", userList);
+		
+		return "admin/users";
 	}
 	
 	
