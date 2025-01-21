@@ -21,15 +21,19 @@ public class RoomDAOImpl implements RoomDAO {
 	public List<Room> findRoomList() {
 
 		System.out.println("RoomDAO 호출 됨");
+		//DB연결 조회
+		//sqlSessionTemplate.selectOne(null); // 결과값이 하나일때
+		List<Room> roomList = sqlSessionTemplate.selectList("room_mapper.findRoomList");
 		
-		return null;
+		return roomList;
 	}
 
 	@Override
 	public int saveRoom(Room room) {
 		// DB에 전달받은 Room 객체에 들어있는 데이터를 저장
 		
-		int result = sqlSessionTemplate.insert("room_mapper.saveRoom", room);	//room_mapper.xml
+		int result = sqlSessionTemplate.insert("room_mapper.saveRoom", room);
+		//room_mapper.xml : namespace:room_mapper id:room_mapper
 		
 		return result;
 	}
