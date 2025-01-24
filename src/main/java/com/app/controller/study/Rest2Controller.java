@@ -1,9 +1,19 @@
 package com.app.controller.study;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.common.ApiCommonCode;
 import com.app.common.CommonCode;
+import com.app.dto.api.ApiResponse;
+import com.app.dto.api.ApiResponseHeader;
+import com.app.dto.study.api.ApiDelivery;
+import com.app.dto.study.api.ApiMenu;
+import com.app.dto.study.api.ApiResponseDelivery;
+import com.app.dto.study.api.ApiStore;
 import com.app.dto.user.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,10 +104,144 @@ public class Rest2Controller {
 		User user = new User();
 		user.setId("abc2");
 		user.setPw("qwe2");
-		user.setName("name2");
+		user.setName("name이름2");
 		user.setUserType(CommonCode.USER_USERTYPE_CUSTOMER);
 		
 		return user;
+	}
+	
+	@GetMapping("rest/rest8")
+	public ApiMenu rest8() {
+		ApiMenu am1 = new ApiMenu();
+		am1.setName("식혜");
+		am1.setPrice(3000);
+		
+		return am1;
+	}
+	
+	@GetMapping("rest/rest9")
+	public List<ApiMenu> rest9() {
+		
+		List<ApiMenu> menuList = new ArrayList<ApiMenu>();
+		
+		ApiMenu am1 = new ApiMenu();
+		am1.setName("식혜");
+		am1.setPrice(3000);
+		
+		menuList.add(am1);
+		menuList.add(new ApiMenu("아이스티", 2500));
+		menuList.add(new ApiMenu("아메리카노", 2000));
+		menuList.add(new ApiMenu("카페라떼", 3500));
+		
+		return menuList;
+	}
+	
+	@GetMapping("rest/rest10")
+	public ApiDelivery rest10() {
+		ApiDelivery apiDelivery = new ApiDelivery();
+		
+		apiDelivery.setStaffName("나배달");
+		apiDelivery.setDestination("로하스 7층");
+		apiDelivery.setPhone("010-1234-5678");
+		
+		ApiStore apiStore = new ApiStore();
+		apiStore.setName("롯데리아");
+		apiStore.setAddress("대홍동 123-4번지 1층");
+		apiStore.setTel("02-111-2222");
+		
+		apiDelivery.setApiStore(apiStore);
+		
+		List<ApiMenu> menuList = new ArrayList<ApiMenu>();
+		menuList.add(new ApiMenu("치즈버거", 3000));
+		menuList.add(new ApiMenu("라이스버거", 4000));
+		menuList.add(new ApiMenu("불고기버거", 3500));
+		
+		apiDelivery.setMenuList(menuList);
+		
+		return apiDelivery;
+	}
+	
+	@GetMapping("rest/rest11")
+	public int rest11() {
+		//10 정상
+		//20 일시적인 문제
+		//30 인증불가
+		//40 데이터 없음
+		return 10;
+	}
+	
+	@GetMapping("rest/rest12")
+	public ApiResponseHeader rest12() {
+		//10 정상
+		//20 일시적인 문제
+		//30 인증불가
+		//40 데이터 없음
+		ApiResponseHeader apiResponseHeader = new ApiResponseHeader();
+//		apiResponseHeader.setResultCode("10");
+//		apiResponseHeader.setResultMessage("정상");
+		apiResponseHeader.setResultCode(ApiCommonCode.API_RESULT_SUCCESS);
+		apiResponseHeader.setResultMessage(ApiCommonCode.API_RESULT_SUCCESS_MSG);
+		
+		return apiResponseHeader;
+	}
+	
+	@GetMapping("rest/rest13")
+	public ApiResponseDelivery rest13() {
+		
+		//header
+		ApiResponseHeader apiResponseHeader = new ApiResponseHeader();
+		apiResponseHeader.setResultCode(ApiCommonCode.API_RESULT_SUCCESS);
+		apiResponseHeader.setResultMessage(ApiCommonCode.API_RESULT_SUCCESS_MSG);
+		
+		//body
+		ApiDelivery apiDelivery = new ApiDelivery();
+		
+		apiDelivery.setStaffName("나배달");
+		apiDelivery.setDestination("로하스 7층");
+		apiDelivery.setPhone("010-1234-5678");
+		
+		ApiStore apiStore = new ApiStore();
+		apiStore.setName("롯데리아");
+		apiStore.setAddress("대홍동 123-4번지 1층");
+		apiStore.setTel("02-111-2222");
+		
+		apiDelivery.setApiStore(apiStore);
+		
+		List<ApiMenu> menuList = new ArrayList<ApiMenu>();
+		menuList.add(new ApiMenu("치즈버거", 3000));
+		menuList.add(new ApiMenu("라이스버거", 4000));
+		menuList.add(new ApiMenu("불고기버거", 3500));
+		
+		apiDelivery.setMenuList(menuList);
+		
+		ApiResponseDelivery res = new ApiResponseDelivery();
+		res.setHeader(apiResponseHeader);
+		res.setBody(apiDelivery);
+		
+		return res;
+	}
+	
+	@GetMapping("rest/rest14")
+	public ApiResponse<User> rest14() {
+		ApiResponse<User> res = new ApiResponse<User>();
+		
+		//header
+		ApiResponseHeader apiResponseHeader = new ApiResponseHeader();
+		apiResponseHeader.setResultCode(ApiCommonCode.API_RESULT_SUCCESS);
+		apiResponseHeader.setResultMessage(ApiCommonCode.API_RESULT_SUCCESS_MSG);
+		
+		res.setHeader(apiResponseHeader);
+		
+		//body
+		User user = new User();
+		user.setId("idid");
+		user.setName("nameee");
+		user.setPw("1234");
+		user.setUserType(CommonCode.USER_USERTYPE_ADMIN);
+		
+		res.setBody(user);
+		
+		return res;
 	}
 	
 }
