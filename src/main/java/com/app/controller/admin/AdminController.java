@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,6 +21,8 @@ import com.app.service.user.UserService;
 
 @Controller
 public class AdminController {
+	
+	private static final Logger log = LogManager.getLogger(AdminController.class);
 
 	@Autowired
 	RoomService roomService;
@@ -51,6 +55,10 @@ public class AdminController {
 	//관리자 객실 목록 확인
 	@GetMapping("/admin/rooms")
 	public String rooms(Model model) {
+		
+		log.info("/admins/rooms 경로 접근 확인 INFO");
+		log.error("/admins/rooms 경로 접근 확인 ERROR");
+		log.debug("/admins/rooms 경로 접근 확인 DEBUG");
 		
 		List<Room> roomList = roomService.findRoomList();
 		//service.findRoomList 호출 -> DAO findRoomList -> DB (Mybatis mapper) SELECT
