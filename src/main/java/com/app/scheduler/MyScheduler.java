@@ -13,7 +13,7 @@ public class MyScheduler {
 	@Autowired
 	UserService userService;
 
-	@Scheduled(cron = "0/5 * * * * *")
+//	@Scheduled(cron = "0/5 * * * * *")
 //	@Scheduled(cron = "0 0 3 * * *")
 	public void schedule() {
 		System.out.println("schedule" + LocalDate.now());
