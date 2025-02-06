@@ -1,10 +1,6 @@
 package com.app.dto.room;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 // 필드만 추가하면 getter, setter 자동으로 추가

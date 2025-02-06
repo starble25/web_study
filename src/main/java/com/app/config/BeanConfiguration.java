@@ -1,12 +1,10 @@
 package com.app.config;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.app.dao.room.RoomDAO;
 import com.app.dao.room.impl.RoomDAOImpl;
 import com.app.service.room.RoomService;
-import com.app.service.room.impl.RoomServiceImpl;
 
 //@Configuration
 public class BeanConfiguration {
