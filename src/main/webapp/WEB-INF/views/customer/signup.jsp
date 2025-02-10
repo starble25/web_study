@@ -21,8 +21,14 @@
 				<spring:hasBindErrors name="user">
 			<c:if test="${errors.hasFieldErrors('id')}">
 				<p class="error-msg">아이디 필수로 입력하세요</p>
+				<p class="error-msg">${errors.getFieldError('id').defaultMessage}</p>
 			</c:if>
 		</spring:hasBindErrors>
+		
+		<c:if test="${userValidError.id != null}">
+			<p class="error-msg">${userValidError.id}</p>
+		</c:if>
+		
 		<button type="button" id="btn_checkDupId">중복체크</button>
 		<span id="checkDupMsg"></span>
 		<br>
@@ -34,6 +40,9 @@
 			</c:if>
 		</spring:hasBindErrors>
 		<label>이름 : <input type="text" name="name" value="${user.name}"></label><br>
+		<c:if test="${userValidError.name != null}">
+			<p class="error-msg">${userValidError.name}</p>
+		</c:if>
 		
 		<br>
 		<button type="submit">가입하기</button>

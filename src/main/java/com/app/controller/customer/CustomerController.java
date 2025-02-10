@@ -10,7 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +25,11 @@ import com.app.dto.api.ApiResponse;
 import com.app.dto.api.ApiResponseHeader;
 import com.app.dto.user.User;
 import com.app.dto.user.UserDupCheck;
+import com.app.dto.user.UserValidError;
 import com.app.service.user.UserService;
 import com.app.util.LoginManager;
+import com.app.validator.UserCustomValidator;
+import com.app.validator.UserValidator;
 
 @Controller
 public class CustomerController {
@@ -39,9 +44,28 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/customer/signup")
-	public String signUpAction(@Valid @ModelAttribute User user, BindingResult br) {
+	public String signUpAction(/*@Valid*/ @ModelAttribute User user, BindingResult br, Model model) {
 		
+		//별도로 생성한 UserValidError 객체 사용하는 케이스
+		UserValidError userValidError = new UserValidError();
+		boolean validResult = UserCustomValidator.validate(user, userValidError);
+		
+		if( !validResult ) {
+			//유효성 검증 통과 실패
+			//저장 진행하지 말고 다시 가입페이지로 이동
+			model.addAttribute("userValidError", userValidError);
+			
+			return "customer/signup";
+		}
+		
+		
+		
+		/*
+		//BindingResult (Errors) 사용하는 케이스
 		//유효성 검증
+		UserCustomValidator.validate(user, br);
+		
+		//유효성 검증 성공여부
 		if( br.hasErrors() ) {
 			List<ObjectError> errorList = br.getAllErrors();
 			for(ObjectError er : errorList) {
@@ -53,6 +77,11 @@ public class CustomerController {
 			
 			return "customer/signup";
 		}
+		*/
+		
+		//client -> request ->userRequestForm
+		//userRequestForm -> user 변환
+		//saveUser(user)
 		
 		
 		user.setUserType(CommonCode.USER_USERTYPE_CUSTOMER);
@@ -64,6 +93,15 @@ public class CustomerController {
 			return "customer/signup";
 		}
 	}
+	
+	
+	@InitBinder("user")
+	public void initUserBinder(WebDataBinder binder) {
+		UserValidator validator = new UserValidator();
+		//binder.setValidator(validator);
+		binder.addValidators(validator);
+	}
+	
 	
 	@ResponseBody
 	@RequestMapping("/customer/checkDupId")
