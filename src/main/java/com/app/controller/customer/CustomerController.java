@@ -1,15 +1,13 @@
 package com.app.controller.customer;
 
-import java.util.List;
+import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -18,15 +16,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.app.common.ApiCommonCode;
 import com.app.common.CommonCode;
 import com.app.dto.api.ApiResponse;
 import com.app.dto.api.ApiResponseHeader;
+import com.app.dto.file.FileInfo;
+import com.app.dto.user.ProfileRequestForm;
 import com.app.dto.user.User;
 import com.app.dto.user.UserDupCheck;
+import com.app.dto.user.UserProfileImage;
 import com.app.dto.user.UserValidError;
+import com.app.service.file.FileService;
 import com.app.service.user.UserService;
+import com.app.util.FileManager;
 import com.app.util.LoginManager;
 import com.app.validator.UserCustomValidator;
 import com.app.validator.UserValidator;
@@ -36,6 +40,9 @@ public class CustomerController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	FileService fileService;
 	
 	//회원가입
 	@GetMapping("/customer/signup")
@@ -202,10 +209,99 @@ public class CustomerController {
 			User user = userService.findUserById(LoginManager.getLoginUserId(session));
 			model.addAttribute("user", user);
 			
+			//userid -> UserProfileImage -> (fileName) -> FileInfo
+			
+			UserProfileImage upi = userService.findUserProfileImageById(user.getId());
+			
+			if( upi != null ) {
+				FileInfo fileInfo = fileService.findFileInfoByFileName(upi.getFileName());
+				model.addAttribute("fileInfo", fileInfo);
+			}
+			
 			return "customer/mypage";
 		} else {
 			return "redirect:/customer/login";
 		}
 	}
+	
+	/*
+	@PostMapping("/customer/profile")
+	public String profileAction(HttpServletRequest request, 
+			MultipartRequest multipartRequest) {
+		
+		System.out.println( request.getParameter("id") );
+		System.out.println( request.getParameter("name") );
+		
+		MultipartFile file = multipartRequest.getFile("profileImage");
+		
+		System.out.println( file.getName() );
+		System.out.println( file.getOriginalFilename() );
+		System.out.println( file.isEmpty() );
+		System.out.println( file.getContentType() );
+		System.out.println( file.getSize() );
+		
+		return "redirect:/customer/mypage";
+	}
+	*/
+	
+	
+	@PostMapping("/customer/profile")
+	public String profileAction(ProfileRequestForm profileRequestForm) {
+		
+		System.out.println( profileRequestForm.getId() );
+		System.out.println( profileRequestForm.getName() );
+		
+		MultipartFile file = profileRequestForm.getProfileImage();
+		
+		//첨부파일 수신
+		System.out.println( file.getName() );
+		System.out.println( file.getOriginalFilename() );
+		System.out.println( file.isEmpty() );
+		System.out.println( file.getContentType() );
+		System.out.println( file.getSize() );
+		
+		//1. 실제 파일을 폴더에 저장
+		/*
+		// 1)자체 저장
+		try {
+			file.transferTo( new File("e:/fileStorage/" + file.getOriginalFilename()) );
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		*/
+		
+		// 2)FileManager 활용
+		try {
+			//실제 폴더에 파일을 저장
+			FileInfo fileInfo = FileManager.storeFile(file);
+		
+		//2. 파일 정보를 DB에 저장
+			//파일 정보만 DB에 저장
+			int result = fileService.saveFileInfo(fileInfo);
+			
+			if( result > 0 ) {
+				//log.info(fileInfo.getFileName() + "파일 저장 잘됨");
+				
+				//UserProfileImage 에도 연결할 수 있게 저장
+				
+				UserProfileImage upi = new UserProfileImage();
+				//userid를 어디서 가져오나?
+				//1) 세션
+				//2) view에 hidden으로 저장된 id를 같이 전송
+				upi.setId(profileRequestForm.getId());		//사용자id
+				upi.setFileName(fileInfo.getFileName());	//파일name
+				
+				int result2 = userService.saveUserProfileImage(upi);
+			}
+			
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
+		
+
+		
+		return "redirect:/customer/mypage";
+	}
+	
 	
 }

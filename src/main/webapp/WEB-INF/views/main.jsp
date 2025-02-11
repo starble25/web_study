@@ -26,6 +26,8 @@
 		<button type="button" onClick="location.href='customer/mypage'">Mypage</button>
 	</c:if>
 	
+	<img src="/image/ocean.jpg">
+	
 	<script>
 		console.log('main페이지 접속 콘솔 로그');
 	</script>
