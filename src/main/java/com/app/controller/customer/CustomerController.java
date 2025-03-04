@@ -1,6 +1,7 @@
 package com.app.controller.customer;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.servlet.http.HttpSession;
 
@@ -32,6 +33,7 @@ import com.app.service.file.FileService;
 import com.app.service.user.UserService;
 import com.app.util.FileManager;
 import com.app.util.LoginManager;
+import com.app.util.SHA256Encryptor;
 import com.app.validator.UserCustomValidator;
 import com.app.validator.UserValidator;
 
@@ -92,7 +94,16 @@ public class CustomerController {
 		
 		
 		user.setUserType(CommonCode.USER_USERTYPE_CUSTOMER);
-		int result = userService.saveUser(user);
+		String encPw;
+		try {
+			//사용자 비밀번호 암호화 처리
+			encPw = SHA256Encryptor.encrypt(user.getPw());
+			user.setPw(encPw);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		
+		int result = userService.saveUser(user);	//DB에 유저정보 저장
 		
 		if( result > 0 ) {
 			return "main"; 
@@ -176,6 +187,12 @@ public class CustomerController {
 		
 		//user 로그인 할 수 있게 정보가 들어있는지 확인
 		user.setUserType(CommonCode.USER_USERTYPE_CUSTOMER);
+		
+		try {
+			user.setPw(SHA256Encryptor.encrypt(user.getPw()));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 		User loginUser = userService.checkUserLogin(user);
 		
 		if( loginUser == null ) {
